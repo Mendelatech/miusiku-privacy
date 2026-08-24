@@ -11,26 +11,31 @@
   .updated { color: #666; font-size: 0.9rem; margin-top: 0; }
   a { color: #4E3868; }
   footer { margin-top: 3rem; color: #888; font-size: 0.85rem; }
-  select#langSelect { font-size: 0.95rem; padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; background: #fff; float: right; }
+  select#langSelect { font-size: 0.95rem; padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; background: #fff; }
   .lang-block[hidden] { display: none; }
   .lang-block[dir="rtl"] { text-align: right; }
+  .site-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .site-header img { width: 44px; height: 44px; border-radius: 50%; display: block; }
 </style>
 </head>
 <body>
-  <select id="langSelect" aria-label="Language / Idioma">
-    <option value="en">English</option>
-    <option value="es">Español</option>
-    <option value="pt">Português</option>
-    <option value="fr">Français</option>
-    <option value="de">Deutsch</option>
-    <option value="it">Italiano</option>
-    <option value="ja">日本語</option>
-    <option value="ko">한국어</option>
-    <option value="zh-CN">简体中文</option>
-    <option value="zh-TW">繁體中文</option>
-    <option value="ru">Русский</option>
-    <option value="ar">العربية</option>
-  </select>
+  <div class="site-header">
+    <img src="mendelatech-chibi.png" alt="Mendelatech" width="44" height="44">
+    <select id="langSelect" aria-label="Language / Idioma">
+      <option value="en">English</option>
+      <option value="es">Español</option>
+      <option value="pt">Português</option>
+      <option value="fr">Français</option>
+      <option value="de">Deutsch</option>
+      <option value="it">Italiano</option>
+      <option value="ja">日本語</option>
+      <option value="ko">한국어</option>
+      <option value="zh-CN">简体中文</option>
+      <option value="zh-TW">繁體中文</option>
+      <option value="ru">Русский</option>
+      <option value="ar">العربية</option>
+    </select>
+  </div>
 
   <div id="en" class="lang-block" lang="en">
     <h1>Privacy Policy — Miusiku</h1>
