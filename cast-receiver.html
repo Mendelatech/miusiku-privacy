@@ -94,20 +94,28 @@
     opacity: 0.4;
   }
 
-  #trackTitle {
+  /* Shared by the real title/artist lines and the invisible spacers mirrored under the lyrics
+     box, so both side-by-side boxes come out the same height regardless of font tweaks - see
+     the matching #lyricsSpacer* elements. */
+  .title-line {
     margin-top: 3%;
     font-size: 2vw;
+    line-height: 1.35;
     font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  #trackArtist {
+  .artist-line {
     font-size: 1.4vw;
+    line-height: 1.35;
     color: var(--on-surface-dim);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+  #lyricsSpacerTitle, #lyricsSpacerArtist {
+    visibility: hidden;
   }
 
   #lyricsBox {
@@ -115,10 +123,12 @@
     border-radius: 24px;
     background: rgba(255, 255, 255, 0.06);
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
     padding: 6%;
+    gap: 4%;
   }
   #lyricsText {
     font-size: 2.6vw;
@@ -131,6 +141,17 @@
     font-weight: 400;
     color: var(--on-surface-dim);
     opacity: 0.6;
+  }
+  #lyricsNext {
+    font-size: 1.8vw;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--on-surface-dim);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  #lyricsNext.visible {
+    opacity: 0.35;
   }
 
   #idleScreen {
@@ -163,13 +184,16 @@
           <img id="artwork" alt="">
           <div id="artworkPlaceholder">&#9835;</div>
         </div>
-        <div id="trackTitle"></div>
-        <div id="trackArtist"></div>
+        <div id="trackTitle" class="title-line"></div>
+        <div id="trackArtist" class="artist-line"></div>
       </div>
       <div class="panel">
         <div id="lyricsBox">
           <div id="lyricsText" class="empty">&#9835;</div>
+          <div id="lyricsNext"></div>
         </div>
+        <div id="lyricsSpacerTitle" class="title-line">&nbsp;</div>
+        <div id="lyricsSpacerArtist" class="artist-line">&nbsp;</div>
       </div>
     </main>
   </div>
@@ -189,6 +213,7 @@
       var titleEl = document.getElementById('trackTitle');
       var artistEl = document.getElementById('trackArtist');
       var lyricsEl = document.getElementById('lyricsText');
+      var lyricsNextEl = document.getElementById('lyricsNext');
 
       var lyricCues = [];       // [{ startSec, endSec, text }]
       var currentLyricsUrl = null;
@@ -211,6 +236,8 @@
         currentLyricsUrl = null;
         lyricsEl.textContent = '♫';
         lyricsEl.classList.add('empty');
+        lyricsNextEl.textContent = '';
+        lyricsNextEl.classList.remove('visible');
       }
 
       /** Minimal WebVTT cue parser - only needs start/end/text, matching exactly what
@@ -260,13 +287,14 @@
       function updateActiveLyric() {
         if (lyricCues.length === 0) return;
         var t = playerManager.getCurrentTimeSec();
-        var active = null;
+        var activeIndex = -1;
         for (var i = 0; i < lyricCues.length; i++) {
           if (t >= lyricCues[i].startSec && t < lyricCues[i].endSec) {
-            active = lyricCues[i];
+            activeIndex = i;
             break;
           }
         }
+        var active = activeIndex >= 0 ? lyricCues[activeIndex] : null;
         if (active) {
           if (lyricsEl.textContent !== active.text || lyricsEl.classList.contains('empty')) {
             lyricsEl.textContent = active.text;
@@ -275,6 +303,16 @@
         } else if (!lyricsEl.classList.contains('empty')) {
           lyricsEl.textContent = '♫';
           lyricsEl.classList.add('empty');
+        }
+
+        // Shown faint below the current line so the next one never just pops in - it's already
+        // been visible, dimly, before its own cue starts.
+        var next = activeIndex >= 0 ? lyricCues[activeIndex + 1] : null;
+        if (next) {
+          if (lyricsNextEl.textContent !== next.text) lyricsNextEl.textContent = next.text;
+          lyricsNextEl.classList.add('visible');
+        } else {
+          lyricsNextEl.classList.remove('visible');
         }
       }
 
